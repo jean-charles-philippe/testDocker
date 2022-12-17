@@ -1,0 +1,28 @@
+services:
+  db:         
+    image: mariadb:latest
+    environment:
+      - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD='yes'
+    volumes:
+      - ./data:/var/lib/mysql
+
+  app:
+      build:
+            context: ./docker/php/
+      depends_on:
+          - db
+      volumes:
+          - ./:/srv/app
+
+  nginx:
+    image: nginx:1.23.3-alpine-slim
+    depends_on:
+        - app
+    volumes:
+        - ./:/srv/app
+        - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    ports:
+        - 8080:80
+    
+
+
